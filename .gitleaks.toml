@@ -1,0 +1,10 @@
+title = "homelab-soc gitleaks config"
+[extend]
+useDefault = true
+
+# Project-specific deny list: never allow these to be committed.
+[[rules]]
+id = "machine-serial"
+description = "Lenovo machine serial / MT-M"
+regex = '''(MJ034QBX|10AM-S00K00)'''
+tags = ["sensitive", "hardware"]

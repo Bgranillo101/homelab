@@ -1,0 +1,34 @@
+# Secrets & credentials
+*.key
+*.pem
+*.p12
+*.pfx
+*.env
+.env*
+secrets/
+credentials*
+*_password*
+*.secret
+
+# pfSense / config exports that may contain secrets (commit only sanitized copies)
+configs/**/*-raw.xml
+configs/**/config-backup*.xml
+
+# Backups & images
+*.vma
+*.vma.zst
+*.tar.zst
+*.iso
+*.img
+*.qcow2
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Large media (keep curated screenshots only)
+media/**/*.mov
+media/**/*.mp4
