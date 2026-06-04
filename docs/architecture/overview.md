@@ -16,8 +16,8 @@ Demonstrate end-to-end security operations skills on owned hardware:
 
 | Phase | Name | Outcome | Status |
 |---|---|---|---|
-| A | Pre-flight | Backups verified, docs scaffolded, storage reclaimed | **In progress** (storage done; backups to verify) |
-| B | Segmentation | pfSense VM + 4 VLANs; migrate 6 LXCs into SERVICES zone; default-deny firewall rules | Not started |
+| A | Pre-flight | Backups verified, docs scaffolded, storage reclaimed | **Complete** |
+| B | Segmentation | pfSense VM + 4 VLANs; migrate 6 LXCs into SERVICES zone; default-deny firewall rules | **In Progress** — VLANs + DHCP done; firewall rules + LXC migration remaining |
 | C | SIEM | Wazuh VM in MONITORING zone; agents on key services | Not started |
 | D | IDS | Suricata on pfSense (ETOpen rules); EVE JSON → Wazuh | Not started |
 | E | Attack & Detect | Kali + vulnerable target in VULNERABLE zone; 5 attacks; detection writeups | Not started |
