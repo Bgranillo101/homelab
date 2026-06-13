@@ -32,3 +32,4 @@ Thumbs.db
 # Large media (keep curated screenshots only)
 media/**/*.mov
 media/**/*.mp4
+CLAUDE.local.md
