@@ -55,17 +55,15 @@ the project *defensible* in an interview instead of "Claude built it.")
 
 *First heavy burst. Unblocks everything. ~$70 hardware + ~$12 domain.*
 
-### ⚠️ Step 0.0 — Credential remediation (do this FIRST)
-- **Why:** Early in the build, several services were stood up with weak, reused, default-style
-  passwords, and some were written down in plaintext. That's an active exposure. Fix it before
-  building anything new on top of it.
+### Step 0.0 — Establish a credential baseline (do this FIRST)
+- **Why:** Before building anything new, make sure every service uses a unique, strong secret and nothing sensitive lives in the repo. Credential hygiene is the foundation everything else sits on.
 - **Do:**
-  1. List every service/account with a credential (Nextcloud, its database, Jellyfin, Uptime-Kuma, Portainer, pfSense admin, Proxmox root, Tailscale, any DB roots).
-  2. For each, generate a **unique, strong** secret in a password manager (Bitwarden/1Password). Rotate it in the service. **Never reuse one password across two services.**
+  1. Inventory every service/account that holds a credential (Nextcloud, its database, Jellyfin, Uptime-Kuma, Portainer, pfSense admin, Proxmox root, Tailscale, any DB roles).
+  2. Ensure each has a **unique, strong** secret stored in a password manager (Bitwarden/1Password); rotate any that are weak, shared, or reused. **Never reuse one password across two services.**
   3. Confirm no secret is committed anywhere: `gitleaks detect --source . --redact` across the repo **and history**.
   4. Going forward, secrets live only in your password manager and (later) SOPS/Vault — never in a doc, chat, screenshot, or commit.
-- **Verify:** `gitleaks detect` reports no findings; you can log into each service with the new secret; old passwords no longer work.
-- **Rollback:** none needed — you're tightening, not changing topology. Keep old creds in the password manager's history only until each rotation is confirmed.
+- **Verify:** `gitleaks detect` reports no findings; you can log into each service with its stored secret; any rotated credential is updated everywhere it's used.
+- **Rollback:** none needed — you're tightening, not changing topology. Keep prior creds in the password manager's history only until each rotation is confirmed.
 
 ### Step 0.1 — RAM to 32 GB
 - **Why:** 16 GB can't hold Wazuh + the dev platform concurrently. This is the single biggest unblock.
