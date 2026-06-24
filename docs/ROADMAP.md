@@ -6,7 +6,7 @@
 > Systems Engineering, ASU). Working style: hands-on, one step at a time, snapshots before
 > risky changes, screenshots to confirm.
 >
-> **Last reviewed:** 2026-06-13
+> **Last reviewed:** 2026-06-23
 
 ---
 
@@ -32,7 +32,7 @@ the project *defensible* in an interview instead of "Claude built it.")
 
 ---
 
-## You are here (live state, 2026-06-13)
+## You are here (live state, 2026-06-23)
 
 | Thing | Value |
 |---|---|
@@ -40,7 +40,7 @@ the project *defensible* in an interview instead of "Claude built it.")
 | Home uplink | Cox CGM4331COX, `192.168.0.1` — blocks most inter-device ports except SSH/22 → tunnels + Tailscale |
 | pfSense | VM **200**, LAN `10.10.10.1`, 4 VLANs, default-deny live |
 | Services | 6 LXCs on `10.10.10.100–105` (pihole/nextcloud/jellyfin/uptime-kuma/portainer/homepage) |
-| **Wazuh** | VM **201** @ `10.10.40.10` — **install in progress** (Phase C) |
+| **Wazuh** | VM **201** @ `10.10.40.10` — **live (Phase C complete)**: manager/indexer/dashboard active; agents 001 pihole + 002 nextcloud active |
 | Vuln target | planned @ `10.10.30.51` (VLAN 30) |
 | pfSense access | `ssh -L 9443:10.10.10.1:443 -N root@192.168.0.13` → `https://localhost:9443` |
 | Tailscale | account active; **tailscaled doesn't persist across CT reboots** (fix in M0) |
@@ -112,10 +112,12 @@ the project *defensible* in an interview instead of "Claude built it.")
 
 # M1 — Finish the SOC Arc (Phases C → D → E)
 
-*Your fastest complete win — it's ~80% done. Bank it to de-risk the deadline.*
+*Your fastest complete win. **Phase C (SIEM) is banked** — Phase D (Suricata IDS) is next.*
 
-### Step 1.1 — Finish the Wazuh install (VM 201)
+### Step 1.1 — Finish the Wazuh install (VM 201) ✅ Done (2026-06-23)
 - **Why:** Phase C centerpiece; central SIEM everything else feeds.
+- **Status:** Complete — manager/indexer/dashboard active + enabled on VM 201; `admin`
+  password rotated via `wazuh-passwords-tool.sh` (stored in the password manager).
 - **Pre:** snapshot VM 201 as `pre-wazuh-install`. Confirm it has ≥4 GB RAM, ≥50 GB disk, internet + DNS (`ping -c2 1.1.1.1`, `ping -c2 google.com`).
 - **Do (in the VM 201 console — use clipboard-paste, the console mangles typed URLs):**
   ```bash
@@ -133,12 +135,16 @@ the project *defensible* in an interview instead of "Claude built it.")
   - Tunnel: `ssh -L 9444:10.10.40.10:443 -N root@192.168.0.13` → `https://localhost:9444`.
 - **Rollback:** restore the `pre-wazuh-install` snapshot; or `sudo bash ./wazuh-install.sh -u` to uninstall.
 
-### Step 1.2 — Deploy agents
+### Step 1.2 — Deploy agents ✅ Done (2026-06-23)
 - **Why:** the SIEM is only as useful as what reports to it.
 - **Do:** From the Wazuh dashboard → Agents → Deploy. Install the agent on Pi-hole (100) and one more LXC, pointing `WAZUH_MANAGER=10.10.40.10`.
 - **Verify:** both agents show **Active** in the dashboard; events appear.
+- **Status:** Complete — agents 001 (pihole, CT 100) and 002 (nextcloud, CT 101) active
+  (agent 4.11.2). Required a pfSense LAN rule `10.10.10.0/24 → 10.10.40.10` TCP 1514-1515
+  above the `Block SERVICES → MONITORING` rule. Full procedure + gotchas in
+  [docs/runbooks/wazuh-agent-on-lxc.md](runbooks/wazuh-agent-on-lxc.md).
 
-### Step 1.3 — Suricata IDS → Wazuh (Phase D)
+### Step 1.3 — Suricata IDS → Wazuh (Phase D) ← next
 - **Why:** network-layer detection at the pfSense chokepoint.
 - **Do:** pfSense → System → Package Manager → install **Suricata** → enable on the LAN/inter-VLAN interface → enable **ETOpen** ruleset → enable **EVE JSON** output → forward EVE JSON to Wazuh (filebeat/agent on pfSense or syslog to manager).
 - **Verify:** trigger a test (e.g., `curl http://testmynids.org/uid/index.html` from a lab host) and see the alert in Wazuh. Tune the obvious Pi-hole DNS false positives.
