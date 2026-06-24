@@ -17,7 +17,7 @@ Then browse to `https://localhost:9443`
 | pfSense → VLANs | https://localhost:9443/interfaces_vlan.php | Yes | ✅ Configured |
 | pfSense → Firewall Rules | https://localhost:9443/firewall_rules.php | Yes | ✅ Rules live |
 | pfSense → DHCP Server | https://localhost:9443/services_dhcp.php | Yes | ✅ Live |
-| Wazuh Dashboard | https://10.10.40.10 (planned) | Yes | ⏳ Phase C |
+| Wazuh Dashboard | https://10.10.40.10 | Yes | ✅ Live (Phase C) |
 | Suricata (pfSense pkg) | https://localhost:9443/suricata/ | Yes | ⏳ Phase D |
 
 ## Lab Services (now on VLAN 10 — 10.10.10.x)
@@ -40,4 +40,4 @@ Then browse to `https://localhost:9443`
 |---|---|
 | Repo | https://github.com/bgranillo05/homelab-soc |
 
-*Last updated: 2026-06-05 — Phase B complete, all LXCs on VLAN 10.*
+*Last updated: 2026-06-23 — Phase C complete, Wazuh SIEM live with agents on Pi-hole and Nextcloud.*

@@ -1,15 +1,19 @@
 # Network Design
 
-## Current state (pre-segmentation)
+> **Status:** the segmentation described below is **implemented** (Phases B–C complete).
+> The 4 VLAN zones, default-deny firewall, and Wazuh SIEM in VLAN 40 are live. Phase D
+> (Suricata IDS on pfSense) is next.
 
-Everything is on a single flat `192.168.0.0/24` network — home router does DHCP.
-One Proxmox bridge (`vmbr0`) bound to the onboard NIC. No VLANs, no firewall rules,
-no IDS. All containers can reach each other and the internet without restriction.
+## Baseline (pre-segmentation — historical)
 
-**Risk:** any compromised service can reach all others (lateral movement), and there
-is no visibility into east-west traffic.
+Before Phase B, everything was on a single flat `192.168.0.0/24` network — home router did
+DHCP. One Proxmox bridge (`vmbr0`) bound to the onboard NIC. No VLANs, no firewall rules,
+no IDS. All containers could reach each other and the internet without restriction.
 
-## Target architecture
+**Risk this addressed:** any compromised service could reach all others (lateral movement),
+with no visibility into east-west traffic.
+
+## Architecture (implemented)
 
 ### Bridges
 
@@ -48,7 +52,7 @@ to inspect all inter-zone traffic.
 | Kali | VM, VLAN 30 | Attacker |
 | Target VM | VM, VLAN 30 | Intentionally vulnerable target |
 
-## Migration plan (Phase B)
+## Migration plan (Phase B — complete)
 
 1. Create `vmbr1` as VLAN-aware bridge in Proxmox.
 2. Spin up pfSense VM; assign WAN (`vmbr0`) and LAN (`vmbr1`).
@@ -56,3 +60,10 @@ to inspect all inter-zone traffic.
 4. Move each LXC network interface to `vmbr1` with VLAN tag 10.
 5. Apply default-deny firewall policy; add TRUSTED-MGMT allow rules.
 6. Verify service reachability from TRUSTED-MGMT before proceeding.
+
+## SIEM (Phase C — complete)
+
+Wazuh runs as VM 201 in the MONITORING zone (VLAN 40, `10.10.40.10`), with agents reporting
+from Pi-hole (CT 100) and Nextcloud (CT 101). A pfSense LAN rule allows SERVICES → manager
+on TCP 1514-1515, placed above the `Block SERVICES → MONITORING` rule so agent traffic isn't
+dropped by default-deny.

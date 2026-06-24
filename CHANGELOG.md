@@ -5,6 +5,16 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [Phase C — SIEM] — 2026-06-23 — COMPLETE
+### Added
+- Wazuh all-in-one (manager + indexer + dashboard) on VM 201 in MONITORING
+  (VLAN 40, 10.10.40.10).
+- Wazuh agents on Pi-hole (CT 100) and Nextcloud (CT 101), both reporting (agent 4.11.2).
+- pfSense LAN rule allowing SERVICES -> manager on 1514-1515 (above the MONITORING block).
+- Runbook: docs/runbooks/wazuh-agent-on-lxc.md.
+### Changed
+- Rotated the Wazuh `admin` dashboard password via wazuh-passwords-tool.sh.
+
 ## [Phase B — Segmentation] — 2026-06-05 — COMPLETE
 
 ### Added

@@ -1,6 +1,6 @@
 # ADR-0004: Network segmentation with pfSense + VLANs
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-06-02
 
 ## Context
@@ -24,3 +24,5 @@ Real network segmentation with an auditable default-deny policy. pfSense becomes
 WAN on `vmbr0` and LAN on the VLAN-aware `vmbr1`. All inter-zone traffic passes through
 pfSense (and Suricata) — a clean IDS chokepoint. Tradeoff: one additional VM (~512 MB RAM,
 ~16 GB disk) and pfSense-specific configuration knowledge.
+
+Implemented 2026-06-02 (Phase B): pfSense VM 200, 4 VLANs, default-deny live.
