@@ -19,7 +19,7 @@ Demonstrate end-to-end security operations skills on owned hardware:
 | A | Pre-flight | Backups verified, docs scaffolded, storage reclaimed | **Complete** |
 | B | Segmentation | pfSense VM + 4 VLANs; migrate 6 LXCs into SERVICES zone; default-deny firewall rules | **Complete** |
 | C | SIEM | Wazuh VM in MONITORING zone; agents on key services | **Complete** |
-| D | IDS | Suricata on pfSense (ETOpen rules); EVE JSON → Wazuh | **Next** |
+| D | IDS | Suricata on pfSense (ETOpen rules); EVE JSON → Wazuh | **In progress** (Suricata detecting; EVE→Wazuh forwarding pending) |
 | E | Attack & Detect | Kali + vulnerable target in VULNERABLE zone; 5 attacks; detection writeups | Not started |
 | F | Polish | Network diagram, README, demo video, resume bullets | Not started |
 | F+ | Stretch | Ansible IaC, honeypot, custom Suricata rules, pfSense as real router, media HDD | Backlog |
@@ -33,6 +33,9 @@ Demonstrate end-to-end security operations skills on owned hardware:
   VLAN 10 (`10.10.10.100–105`).
 - **SIEM:** Wazuh all-in-one live on VM 201 in the MONITORING zone (VLAN 40, `10.10.40.10`),
   with agents reporting from Pi-hole (CT 100) and Nextcloud (CT 101).
+- **IDS:** Suricata running on the pfSense LAN chokepoint (vtnet1) in IDS mode with the
+  ETOpen ruleset; first detection validated (GPL ATTACK_RESPONSE, SID 2100498). Forwarding
+  EVE output into Wazuh is still in progress — see Phase D status above.
 - **Storage:** LVM thin pool `pve/data` at ~7% used (~324 GB effective free) after disk reclaim.
 
 See [network design](network-design.md) for the target VLAN architecture and [IP address plan](ip-address-plan.md)

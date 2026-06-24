@@ -33,3 +33,7 @@ Thumbs.db
 media/**/*.mov
 media/**/*.mp4
 CLAUDE.local.md
+
+# Private operator context — never commit (live IPs, tunnels, topology)
+HOMELAB_PROJECT_CONTEXT.md
+/links.md

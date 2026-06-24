@@ -5,6 +5,23 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [Phase D — Network IDS] — 2026-06-24 — IN PROGRESS
+
+### Added
+- Suricata `7.0.8_5` on pfSense (System → Package Manager).
+- Rulesets: ETOpen Emerging Threats + Feodo Tracker Botnet C2 IP + ABUSE.ch SSL Blacklist.
+- Suricata interface on LAN (vtnet1) in IDS mode (Block Offenders off, Detect-Engine
+  Profile Medium, EVE JSON on); attack-mapped rule categories enabled.
+- First detection validated end-to-engine: a `testmynids.org` curl from Pi-hole tripped
+  GPL ATTACK_RESPONSE id check returned root (SID 2100498), visible in Suricata → Alerts.
+- Runbook: docs/runbooks/suricata-ids-setup.md.
+
+### Known gap
+- Suricata EVE → Wazuh forwarding via syslog is not functional: pfSense remote-logging
+  does not forward Suricata's LOCAL1 facility, so EVE messages never leave the firewall
+  (tcpdump on the SIEM shows 0 packets on UDP 514 despite a valid config and successful
+  ping). Switching to file-based ingestion of `eve.json` next session.
+
 ## [Phase C — SIEM] — 2026-06-23 — COMPLETE
 ### Added
 - Wazuh all-in-one (manager + indexer + dashboard) on VM 201 in MONITORING

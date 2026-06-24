@@ -12,4 +12,4 @@ Use `adr-template.md` when adding a new record.
 | [0003](0003-reclaim-space-via-thin-resize.md) | Reclaim space via thin-pool resize | Accepted |
 | [0004](0004-segmentation-with-pfsense-vlans.md) | Segmentation with pfSense + VLANs | Accepted |
 | [0005](0005-wazuh-as-siem.md) | Wazuh as SIEM | Accepted |
-| [0006](0006-suricata-as-ids.md) | Suricata as IDS | Proposed |
+| [0006](0006-suricata-as-ids.md) | Suricata as IDS | Accepted |
