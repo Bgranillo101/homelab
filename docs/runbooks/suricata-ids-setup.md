@@ -47,27 +47,21 @@
 - **Detect profile Medium** and **Live Rule Swap OFF** respect a 16 GB RAM budget.
 - Do **not** enable `emerging-dns` — Pi-hole generates constant DNS noise.
 
-## SIEM forwarding (status: IN PROGRESS — does not work yet)
-The goal is Suricata alerts in the Wazuh dashboard. A syslog path was chosen to avoid
-putting an unsupported Wazuh agent on the FreeBSD firewall. What was tried:
-- pfSense: Suricata interface **EVE Output → Syslog** (facility LOCAL1).
-- pfSense: Status → System Logs → Settings → Remote Logging → `10.10.40.10:514`,
-  contents "Everything".
-- Wazuh (VM 201): added a `<remote><connection>syslog</connection><port>514</port>
-  <protocol>udp</protocol><allowed-ips>10.10.40.1</allowed-ips></remote>` block to
-  `/var/ossec/etc/ossec.conf`; manager restarted; `ss -lunp` confirms `wazuh-remoted`
-  on UDP `0.0.0.0:514`. pfSense → `ping 10.10.40.10` = 0.0% loss.
+## SIEM forwarding (resolved 2026-06-25 — file-pull, not syslog)
+The goal is Suricata alerts in the Wazuh dashboard, without putting an unsupported Wazuh
+agent on the FreeBSD firewall. **Syslog was tried first and is a dead end:** pfSense's
+Suricata EVE-syslog uses the FreeBSD **LOCAL1** facility, but pfSense remote-logging only
+forwards its own managed log streams and does **not** forward LOCAL1 — so EVE is written
+locally and never shipped (`tcpdump -n -i any udp port 514` on Wazuh showed **0 packets**
+despite a valid config and a successful ping).
 
-**It still doesn't work.** `tcpdump -n -i any udp port 514` on Wazuh shows **0 packets**
-while the curl is fired. Root cause: pfSense's Suricata EVE-syslog uses the FreeBSD
-**LOCAL1** facility, but pfSense remote-logging only forwards its own managed log streams
-and does **not** forward LOCAL1 — so EVE is written locally on pfSense and never shipped.
-Valid config + successful ping, yet nothing arrives.
+The working path keeps EVE output as **FILE** and pulls `eve.json` from pfSense to Wazuh
+over a forced-command, restricted SSH key, ingested with a `localfile` block — nothing is
+installed on the firewall. Full procedure in
+[suricata-wazuh-integration.md](suricata-wazuh-integration.md); decision in
+[ADR-0007](../architecture/decisions/0007-pull-based-eve-ingestion.md).
 
-**Planned fix (next session):** switch EVE output back to **FILE** and ingest pfSense's
-`eve.json` into Wazuh via a file-based method; re-run the smoke test to confirm the alert
-reaches the dashboard end-to-end.
-
-## Result (2026-06-24)
-Suricata live on the LAN chokepoint, first detection confirmed (SID 2100498); SIEM
-forwarding pending.
+## Result (2026-06-25)
+Suricata live on the LAN chokepoint, first detection confirmed (SID 2100498), and EVE
+shipped end to end into Wazuh via the file-pull pipeline (1,783 alerts indexed, rule
+86601 — STREAM baseline; attack signatures are Phase E).

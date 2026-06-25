@@ -8,3 +8,4 @@ observed gotchas — not generic guides.
 | [lxc-disk-resize.md](lxc-disk-resize.md) | Shrink an over-provisioned LXC root disk on a thin pool |
 | [wazuh-agent-on-lxc.md](wazuh-agent-on-lxc.md) | Enroll an LXC service into the Wazuh manager (SIEM) |
 | [suricata-ids-setup.md](suricata-ids-setup.md) | Stand up Suricata IDS on the pfSense chokepoint |
+| [suricata-wazuh-integration.md](suricata-wazuh-integration.md) | Ship Suricata EVE JSON from pfSense into Wazuh via a file-pull |

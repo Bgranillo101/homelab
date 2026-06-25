@@ -3,7 +3,7 @@
 Re-architecting a live 6-service Proxmox homelab into a segmented security lab —
 firewall, network IDS, and SIEM — validated with simulated attacks.
 
-> Status: **Phase D (network IDS) — Suricata live and detecting; SIEM forwarding in progress.** Phases A–C complete. See [roadmap](docs/architecture/overview.md).
+> Status: **Phases A–D complete** — Suricata network IDS feeding the Wazuh SIEM via a file-pull pipeline. **Phase E (attack & detect) next.** See [roadmap](docs/architecture/overview.md).
 
 ## Why this exists
 Most homelabs run every service on one flat network. This project hardens a real,
@@ -32,7 +32,7 @@ with a default-deny posture between them. See [network design](docs/architecture
 | A — Pre-flight | Backups, docs, storage headroom | **Complete** |
 | B — Segmentation | pfSense + VLANs, migrate services | **Complete** |
 | C — SIEM | Wazuh + agents | **Complete** |
-| D — IDS | Suricata → Wazuh | **In progress** (detection done; SIEM forwarding pending) |
+| D — IDS | Suricata → Wazuh | **Complete** |
 | E — Attack & Detect | 5 attacks, detection writeups | Planned |
 | F — Polish | Diagram, demo, writeup | Planned |
 

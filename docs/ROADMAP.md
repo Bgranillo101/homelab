@@ -6,7 +6,7 @@
 > Systems Engineering, ASU). Working style: hands-on, one step at a time, snapshots before
 > risky changes, screenshots to confirm.
 >
-> **Last reviewed:** 2026-06-23
+> **Last reviewed:** 2026-06-25
 
 ---
 
@@ -32,7 +32,7 @@ the project *defensible* in an interview instead of "Claude built it.")
 
 ---
 
-## You are here (live state, 2026-06-23)
+## You are here (live state, 2026-06-25)
 
 | Thing | Value |
 |---|---|
@@ -41,6 +41,7 @@ the project *defensible* in an interview instead of "Claude built it.")
 | pfSense | VM **200**, LAN `10.10.10.1`, 4 VLANs, default-deny live |
 | Services | 6 LXCs on `10.10.10.100–105` (pihole/nextcloud/jellyfin/uptime-kuma/portainer/homepage) |
 | **Wazuh** | VM **201** @ `10.10.40.10` — **live (Phase C complete)**: manager/indexer/dashboard active; agents 001 pihole + 002 nextcloud active |
+| **Suricata** | on pfSense LAN (vtnet1), IDS mode — **live (Phase D complete)**: EVE JSON shipped to Wazuh via scoped-key file-pull (1,783 alerts indexed, rule 86601). STREAM baseline; attack sigs are Phase E |
 | Vuln target | planned @ `10.10.30.51` (VLAN 30) |
 | pfSense access | `ssh -L 9443:10.10.10.1:443 -N root@192.168.0.13` → `https://localhost:9443` |
 | Tailscale | account active; **tailscaled doesn't persist across CT reboots** (fix in M0) |
@@ -112,7 +113,7 @@ the project *defensible* in an interview instead of "Claude built it.")
 
 # M1 — Finish the SOC Arc (Phases C → D → E)
 
-*Your fastest complete win. **Phase C (SIEM) is banked** — Phase D (Suricata IDS) is next.*
+*Your fastest complete win. **Phases C (SIEM) and D (Suricata IDS) are banked** — Phase E (attack & detect) is next.*
 
 ### Step 1.1 — Finish the Wazuh install (VM 201) ✅ Done (2026-06-23)
 - **Why:** Phase C centerpiece; central SIEM everything else feeds.
@@ -144,11 +145,20 @@ the project *defensible* in an interview instead of "Claude built it.")
   above the `Block SERVICES → MONITORING` rule. Full procedure + gotchas in
   [docs/runbooks/wazuh-agent-on-lxc.md](runbooks/wazuh-agent-on-lxc.md).
 
-### Step 1.3 — Suricata IDS → Wazuh (Phase D) ← next
+### Step 1.3 — Suricata IDS → Wazuh (Phase D) ✅ Done (2026-06-25)
 - **Why:** network-layer detection at the pfSense chokepoint.
-- **Do:** pfSense → System → Package Manager → install **Suricata** → enable on the LAN/inter-VLAN interface → enable **ETOpen** ruleset → enable **EVE JSON** output → forward EVE JSON to Wazuh (filebeat/agent on pfSense or syslog to manager).
+- **Do:** pfSense → System → Package Manager → install **Suricata** → enable on the LAN/inter-VLAN interface → enable **ETOpen** ruleset → enable **EVE JSON** output → forward EVE JSON to Wazuh.
 - **Verify:** trigger a test (e.g., `curl http://testmynids.org/uid/index.html` from a lab host) and see the alert in Wazuh. Tune the obvious Pi-hole DNS false positives.
 - **Rollback:** disable Suricata service in pfSense; snapshot first.
+- **Status:** Complete — Suricata `7.0.8_5` on pfSense LAN (vtnet1) in IDS mode (ETOpen +
+  Feodo + ABUSE.ch SSL); first detection SID 2100498. **Syslog forwarding was a dead end**
+  (pfSense doesn't forward the Suricata `LOCAL1` facility), so EVE is shipped via a
+  **scoped-key file-pull** instead — a forced-command SSH key + `pull-eve.sh` + per-minute
+  cron + Wazuh `localfile`, with nothing installed on the firewall. End to end: 1,783
+  Suricata alerts in the dashboard (rule 86601). These are STREAM-engine baseline events;
+  real attack-signature hits come in Phase E. Full procedure + gotchas in
+  [docs/runbooks/suricata-wazuh-integration.md](runbooks/suricata-wazuh-integration.md);
+  decision in [ADR-0007](architecture/decisions/0007-pull-based-eve-ingestion.md).
 
 ### Step 1.4 — Attack & Detect ×5 (Phase E)
 - **Why:** proves the SOC works end to end — the strongest single story for the security track.

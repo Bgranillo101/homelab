@@ -13,3 +13,4 @@ Use `adr-template.md` when adding a new record.
 | [0004](0004-segmentation-with-pfsense-vlans.md) | Segmentation with pfSense + VLANs | Accepted |
 | [0005](0005-wazuh-as-siem.md) | Wazuh as SIEM | Accepted |
 | [0006](0006-suricata-as-ids.md) | Suricata as IDS | Accepted |
+| [0007](0007-pull-based-eve-ingestion.md) | Pull-based EVE ingestion (no agent on the firewall) | Accepted |

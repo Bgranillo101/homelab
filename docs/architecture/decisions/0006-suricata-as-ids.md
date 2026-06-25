@@ -29,9 +29,16 @@ ETOpen ruleset (plus Feodo Tracker and ABUSE.ch SSL Blacklist). First detection
 validated: a `testmynids.org` smoke test tripped GPL ATTACK_RESPONSE id check returned
 root (SID 2100498) in the Suricata Alerts tab.
 
-### Open consequence — EVE → Wazuh forwarding
+### EVE → Wazuh forwarding (resolved 2026-06-25)
 Forwarding EVE output to Wazuh via syslog did **not** work: pfSense's Suricata EVE-syslog
 output uses the FreeBSD LOCAL1 facility, but pfSense remote-logging only forwards its own
 managed log streams and does not forward LOCAL1 — so EVE messages never leave the
-firewall. The planned path is to switch EVE output back to FILE and ingest pfSense's
-`eve.json` into Wazuh via a file-based method.
+firewall. This was replaced by a file-pull pipeline: Wazuh pulls `eve.json` from pfSense
+over a forced-command, restricted SSH key and ingests it with a `localfile` block, with
+nothing installed on the firewall. See [ADR-0007](0007-pull-based-eve-ingestion.md).
+
+### SIEM-visible alerts to date
+The pipeline is validated end to end (1,783 alerts in the Wazuh dashboard, Wazuh rule
+86601). These are all STREAM-engine TCP-anomaly events — a baseline, partly self-generated
+by the pull traffic. Attack-signature validation (the ETOpen rule hits this ruleset is
+chosen for) is Phase E.
